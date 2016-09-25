@@ -1,14 +1,24 @@
 # LegDay
 
-To start your Nerves app:
+**TODO: Add description**
 
-  * Install dependencies with `mix deps.get`
-  * Create firmware with `mix firmware`
-  * Burn to an SD card with `mix firmware.burn`
+## Installation
 
-## Learn more
+If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
 
-  * Official docs: https://hexdocs.pm/nerves/getting-started.html
-  * Official website: http://www.nerves-project.org/
-  * Discussion Slack elixir-lang #nerves ([Invite](https://elixir-slackin.herokuapp.com/))
-  * Source: https://github.com/nerves-project/nerves
+  1. Add `leg_day` to your list of dependencies in `mix.exs`:
+
+    ```elixir
+    def deps do
+      [{:leg_day, "~> 0.1.0"}]
+    end
+    ```
+
+  2. Ensure `leg_day` is started before your application:
+
+    ```elixir
+    def application do
+      [applications: [:leg_day]]
+    end
+    ```
+
