@@ -16,6 +16,22 @@ defmodule LegDay.Actuator do
     {:ok, %{actu_id: actu_id, serial_pid: pid, state: :off, run_pid: []}}
   end
 
+  def handle_cast({:run, %{time: time, negative: neg, batch: batch}}, store = %{state: state, actu_id: id, serial_pid: pid}) do
+    if state != :off do
+      #TODO: be a good programmer
+    end
+
+    case neg do
+      true -> UART.write pid, "#{id}retract"
+      false -> UART.write pid, "#{id}no"
+      _ -> {:error, "OH NO"}
+    end
+
+    run_pid = spawn_link __MODULE__, :timer, [time, id, pid, batch]
+
+    {:noreply, %{store | state: :on, run_pid: run_pid}}
+  end
+
   def handle_cast({:run, %{time: time, negative: neg}}, store = %{state: state, actu_id: id, serial_pid: pid}) do
     if state != :off do
       #TODO: be a good programmer
@@ -44,12 +60,20 @@ defmodule LegDay.Actuator do
     wave duration
   end
 
-  def timer time, actu_id, uart_id do
+  def timer time, actu_id, uart_id, next // [] do
     receive do
       :die -> :ded
     after time ->
-      UART.write(uart_id, "#{actu_id}stop")
-      {:timeded, :time}
+      unless next != [] do
+        UART.write(uart_id, "#{actu_id}stop")
+        {:timeded, :time}
+      else
+        [{name, duration, neg}|t] = next
+
+        run name, duration, neg
+
+        {:timeded, :next}
+      end
     end
   end
 end
