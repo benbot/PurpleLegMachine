@@ -14,7 +14,8 @@ defmodule LegDay.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger]]
+    [ mod: {LegDay, []},
+      applications: [:logger, :elixir_ale]]
   end
 
   # Dependencies can be Hex packages:
@@ -27,6 +28,8 @@ defmodule LegDay.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [{:elixir_ale, ">= 0.0.0"},
+     {:poison, ">= 0.0.0"},
+     {:nerves_uart, ">= 0.0.0"}]
   end
 end

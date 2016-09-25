@@ -8,7 +8,7 @@ defmodule LegDay.Store do
   def start_link store_name do
     # TODO get initial value
     
-    GenServer.start_link __MODULE__, [0], name: store_name
+    GenServer.start_link __MODULE__, [%{}], name: store_name
   end
 
   def handle_call(:get, _from, state) do
