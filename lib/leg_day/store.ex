@@ -5,10 +5,8 @@ defmodule LegDay.Store do
     {:ok, inital_value}
   end
 
-  def start_link store_name do
-    # TODO get initial value
-    
-    GenServer.start_link __MODULE__, [%{}], name: store_name
+  def start_link do
+    GenServer.start_link __MODULE__, [%{upper: 126, lower: 72.03}], name: __MODULE__
   end
 
   def handle_call(:get, _from, state) do
@@ -19,11 +17,11 @@ defmodule LegDay.Store do
     {:noreply, new_state}
   end
 
-  def get name do
-    GenServer.call name, :get
+  def get do
+    GenServer.call __MODULE__, :get
   end
 
-  def set name, payload do
-    GenServer.cast name, {:set, payload}
+  def set payload do
+    GenServer.cast __MODULE__, {:set, payload}
   end
 end
