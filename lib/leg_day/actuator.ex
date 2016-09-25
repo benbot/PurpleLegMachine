@@ -37,10 +37,7 @@ defmodule LegDay.Actuator do
   end
 
   def wave duration do
-    run :"actuator: 1", 2000, true
-    :timer.sleep(duration)
-    run :"actuator: 1", 2000, false
-    :timer.sleep(duration)
+    run :"actuator: 1", 2000, true, [{:"actuator 1", 2000, false}]
     wave duration
   end
 
@@ -54,7 +51,7 @@ defmodule LegDay.Actuator do
       else
         [{name, duration, neg}|t] = next
 
-        run name, duration, neg
+        run name, duration, neg, t
 
         {:timeded, :next}
       end
