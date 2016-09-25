@@ -3,7 +3,7 @@ defmodule LegDay.Actuator do
   alias Nerves.UART
   
   def start_link actu_id do
-    GenServer.start_link __MODULE__, [actu_id], name: :"actuator: #{actu_id}"
+    GenServer.start_link __MODULE__, actu_id, name: :"actuator: #{actu_id}"
   end
 
   def init(actu_id) do
@@ -16,25 +16,17 @@ defmodule LegDay.Actuator do
     {:ok, %{actu_id: actu_id, serial_pid: pid, state: :off}}
   end
 
-  def handle_cast({:run, %{time: time, negative: neg}}, store) do
+  def handle_cast({:run, %{time: time, negative: neg}}, store = %{state: state, actu_id: id, serial_pid: pid}) do
     if state != :off do
-      IO.puts "STATE FOUND"
-      send run_pid, :die
+      #TODO: be a good programmer
     end
 
-    IO.puts "CHECKING NEG"
     case neg do
-      true -> 
-        IO.puts "IS NEG"
-        UART.write(pid, "#{id}retract")
-      false -> UART.write(pid, "#{id}no")
+      true -> UART.write(pid, "#{actu_id}retract")
+      false -> UART.write(pid, "#{actu_id}no")
     end
 
-    run_pid = spawn_link __MODULE__, time, [time, id, pid]
-
-    IO.puts "DONE"
-
-    {:noreply, %{store | state: :on, run_pid: run_pid} }
+    spawn_link __MODULE__, :timer, [time, id, pid]
   end
 
   def run name, time, neg do
@@ -45,7 +37,7 @@ defmodule LegDay.Actuator do
     receive do
       :die -> :ded
     after time ->
-      UART.write(pid, "#{actu_id}stop")
+      UART.write(uart_id, "#{actu_id}stop")
       {:timeded, :time}
     end
   end
