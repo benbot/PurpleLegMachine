@@ -16,7 +16,7 @@ defmodule LegDay.Actuator do
     {:ok, %{actu_id: actu_id, serial_pid: pid, state: :off}}
   end
 
-  def handle_cast({:run, %{time: time, negative: neg}, store = %{actu_id: id, serial_pid: pid, state: state, running_pid: run_pid}}) do
+  def handle_cast({:run, %{time: time, negative: neg}}, store = %{actu_id: id, serial_pid: pid, state: state, running_pid: run_pid}) do
     if state != :off do
       send run_pid, :die
     end
