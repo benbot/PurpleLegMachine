@@ -32,24 +32,8 @@ defmodule LegDay.Actuator do
     {:noreply, %{store | state: :on, run_pid: run_pid}}
   end
 
-  def handle_cast({:run, %{time: time, negative: neg}}, store = %{state: state, actu_id: id, serial_pid: pid}) do
-    if state != :off do
-      #TODO: be a good programmer
-    end
-
-    case neg do
-      true -> UART.write pid, "#{id}retract"
-      false -> UART.write pid, "#{id}no"
-      _ -> {:error, "OH NO"}
-    end
-
-    run_pid = spawn_link __MODULE__, :timer, [time, id, pid]
-
-    {:noreply, %{store | state: :on, run_pid: run_pid}}
-  end
-
-  def run name, time, neg do
-    GenServer.cast name, {:run, %{time: time, negative: neg}}
+  def run name, time, neg, batch \\ [] do
+    GenServer.cast name, {:run, %{time: time, negative: neg, batch: batch}}
   end
 
   def wave duration do
