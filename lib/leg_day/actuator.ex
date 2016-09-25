@@ -16,17 +16,23 @@ defmodule LegDay.Actuator do
     {:ok, %{actu_id: actu_id, serial_pid: pid, state: :off}}
   end
 
-  def handle_cast({:run, %{time: time, negative: neg}}, store = %{actu_id: id, serial_pid: pid, state: state, running_pid: run_pid}) do
+  def handle_cast({:run, %{time: time, negative: neg}}, store) do
     if state != :off do
+      IO.puts "STATE FOUND"
       send run_pid, :die
     end
 
+    IO.puts "CHECKING NEG"
     case neg do
-      true -> UART.write(pid, "#{id}retract")
+      true -> 
+        IO.puts "IS NEG"
+        UART.write(pid, "#{id}retract")
       false -> UART.write(pid, "#{id}no")
     end
 
     run_pid = spawn_link __MODULE__, time, [time, id, pid]
+
+    IO.puts "DONE"
 
     {:noreply, %{store | state: :on, run_pid: run_pid} }
   end
@@ -37,10 +43,10 @@ defmodule LegDay.Actuator do
 
   defp timer time, actu_id, uart_id do
     receive do
-      :die -> :ok
+      :die -> :ded
     after time ->
-      UART.write(pid, "#{actu_id}:stop")
-      {:ok, :time}
+      UART.write(pid, "#{actu_id}stop")
+      {:timeded, :time}
     end
   end
 end
