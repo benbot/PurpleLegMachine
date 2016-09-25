@@ -44,7 +44,7 @@ defmodule LegDay.Actuator do
     wave duration
   end
 
-  def timer time, actu_id, uart_id, next // [] do
+  def timer time, actu_id, uart_id, next \\ [] do
     receive do
       :die -> :ded
     after time ->
