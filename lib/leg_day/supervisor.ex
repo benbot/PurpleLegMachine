@@ -10,7 +10,7 @@ defmodule LegDay.Supervisor do
   def start_workers sup do
 
     {:ok, store} = Supervisor.start_child sup, 
-                    worker(LegDay.Store, [:store])
+                    worker(LegDay.Store, [])
     {:ok, _pid} = Supervisor.start_child sup, 
                     supervisor(LegDay.InputSup, [store])
 

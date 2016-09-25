@@ -11,9 +11,9 @@ defmodule LegDay.Actuator do
 
     {:ok, pid} = UART.start_link
 
-    UART.open pid, h, speed: 9001, active: false
+    UART.open pid, h, speed: 9600, active: false
 
-    {:ok, %{actu_id: actu_id, serial_pid: pid, state: :off}}
+    {:ok, %{actu_id: actu_id, serial_pid: pid, state: :off, run_pid: []}}
   end
 
   def handle_cast({:run, %{time: time, negative: neg}}, store = %{state: state, actu_id: id, serial_pid: pid}) do
@@ -22,18 +22,29 @@ defmodule LegDay.Actuator do
     end
 
     case neg do
-      true -> UART.write(pid, "#{actu_id}retract")
-      false -> UART.write(pid, "#{actu_id}no")
+      true -> UART.write pid, "#{id}retract"
+      false -> UART.write pid, "#{id}no"
+      _ -> {:error, "OH NO"}
     end
 
-    spawn_link __MODULE__, :timer, [time, id, pid]
+    run_pid = spawn_link __MODULE__, :timer, [time, id, pid]
+
+    {:noreply, %{store | state: :on, run_pid: run_pid}}
   end
 
   def run name, time, neg do
     GenServer.cast name, {:run, %{time: time, negative: neg}}
   end
 
-  defp timer time, actu_id, uart_id do
+  def wave duration do
+    run :"actuator: 1", 2000, true
+    :timer.sleep(duration)
+    run :"actuator: 1", 2000, false
+    :timer.sleep(duration)
+    wave duration
+  end
+
+  def timer time, actu_id, uart_id do
     receive do
       :die -> :ded
     after time ->
