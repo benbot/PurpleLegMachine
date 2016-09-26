@@ -1,24 +1,12 @@
 # LegDay
 
-**TODO: Add description**
+This controls a custom exo-leg by sending serial signals from a raspberry pi to 
+and arduino with a motor control shield attached.
 
-## Installation
+TODO: Base next motion set off inputs from a gyroscope and an accelerometer
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
+## Where does what?
 
-  1. Add `leg_day` to your list of dependencies in `mix.exs`:
+The `Actuator` module controls the actual leg movement
 
-    ```elixir
-    def deps do
-      [{:leg_day, "~> 0.1.0"}]
-    end
-    ```
-
-  2. Ensure `leg_day` is started before your application:
-
-    ```elixir
-    def application do
-      [applications: [:leg_day]]
-    end
-    ```
-
+This was made in 36 hours for MedHacks 2016. :)
